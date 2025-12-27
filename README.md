@@ -32,30 +32,28 @@ npm run build
 npm run preview
 ```
 
-## Generar APK para Android
+## 📱 Descargar APK para Android
 
-Esta aplicación puede compilarse como APK nativa para Android.
+El APK se compila **automáticamente** con GitHub Actions. ¡No necesitas instalar nada!
 
-### Guía Rápida
+### Descarga Rápida
+
+1. Ve a la pestaña [**Actions**](../../actions) en GitHub
+2. Selecciona el workflow más reciente con ✅
+3. Descarga el artefacto `app-debug`
+4. Instala el APK en tu móvil Android
+
+📖 **[Guía detallada de descarga](DESCARGAR_APK.md)**
+
+### Compilación Manual (Opcional)
+
+Si prefieres compilar tú mismo localmente:
+
+- [Guía Rápida](QUICK_START_ANDROID.md) - Usando Android Studio
+- [Guía Completa](BUILD_APK.md) - Instrucciones detalladas
 
 ```bash
-# Construir y abrir Android Studio
-npm run android:build
-```
-
-Luego en Android Studio: **Build → Build APK(s)**
-
-### Documentación Completa
-
-- [Guía Rápida](QUICK_START_ANDROID.md) - Pasos básicos
-- [Guía Completa](BUILD_APK.md) - Instrucciones detalladas, firma de APK, solución de problemas
-
-### Scripts Disponibles
-
-```bash
-npm run android:sync    # Construir y sincronizar con Android
-npm run android:open    # Abrir Android Studio
-npm run android:build   # Construir, sincronizar y abrir (todo en uno)
+npm run android:build   # Abrir Android Studio
 ```
 
 ## Tecnologías
