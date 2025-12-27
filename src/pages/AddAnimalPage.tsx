@@ -17,8 +17,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   IconButton,
-  Stack,
-  Chip
+  Stack
 } from '@mui/material';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';

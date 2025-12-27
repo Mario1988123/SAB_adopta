@@ -8,7 +8,6 @@ import {
   Typography,
   Chip,
   Box,
-  TextField,
   MenuItem,
   Select,
   FormControl,
@@ -23,7 +22,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
-import { AnimalType, AgeUnit, SearchFilters } from '../types';
+import { AnimalType, SearchFilters } from '../types';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
 

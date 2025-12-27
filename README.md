@@ -32,6 +32,32 @@ npm run build
 npm run preview
 ```
 
+## Generar APK para Android
+
+Esta aplicación puede compilarse como APK nativa para Android.
+
+### Guía Rápida
+
+```bash
+# Construir y abrir Android Studio
+npm run android:build
+```
+
+Luego en Android Studio: **Build → Build APK(s)**
+
+### Documentación Completa
+
+- [Guía Rápida](QUICK_START_ANDROID.md) - Pasos básicos
+- [Guía Completa](BUILD_APK.md) - Instrucciones detalladas, firma de APK, solución de problemas
+
+### Scripts Disponibles
+
+```bash
+npm run android:sync    # Construir y sincronizar con Android
+npm run android:open    # Abrir Android Studio
+npm run android:build   # Construir, sincronizar y abrir (todo en uno)
+```
+
 ## Tecnologías
 
 - React 18
