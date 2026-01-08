@@ -65,20 +65,31 @@ export const AddAnimalPage: React.FC = () => {
       breed: finalBreed,
       age,
       ageUnit,
+      gender: 'desconocido',
+      size: type === 'perro' ? 'mediano' : 'pequeño',
+      color: '',
       reason,
       maxAdoptionDate: maxAdoptionDate || undefined,
       urgent,
       hasChip,
       isDewormed,
+      isSterilized: false,
       hasDisease,
       diseaseDescription: hasDisease ? diseaseDescription : undefined,
       hasDisability,
       disabilityDescription: hasDisability ? disabilityDescription : undefined,
+      goodWithKids: true,
+      goodWithDogs: true,
+      goodWithCats: true,
       photos: photoUrl ? [photoUrl] : [],
       videos: [],
       mainPhoto: photoUrl || 'https://via.placeholder.com/400x300?text=Sin+foto',
-      ownerId: user?.id || '1',
-      ownerName: user?.name || 'Usuario'
+      ownerId: user?.id || 'demo-1',
+      ownerName: user?.name || 'Usuario',
+      ownerPhone: user?.phone,
+      location: user?.city || 'San Antonio de Benagéber',
+      description: '',
+      status: 'disponible'
     });
 
     navigate('/');

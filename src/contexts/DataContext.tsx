@@ -1,18 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Animal, Donation, Chat, Notification } from '../types';
+import { Animal, Donation, Chat, Notification, Message } from '../types';
 
 interface DataContextType {
   animals: Animal[];
-  addAnimal: (animal: Omit<Animal, 'id' | 'createdAt'>) => void;
+  addAnimal: (animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt' | 'views'>) => void;
+  updateAnimal: (id: string, data: Partial<Animal>) => void;
   deleteAnimal: (id: string) => void;
+  getAnimalsByOwner: (ownerId: string) => Animal[];
+  incrementViews: (id: string) => void;
   donations: Donation[];
   addDonation: (donation: Omit<Donation, 'id' | 'createdAt'>) => void;
   deleteDonation: (id: string) => void;
   chats: Chat[];
   addChat: (chat: Omit<Chat, 'id'>) => void;
+  sendMessage: (chatId: string, message: Omit<Message, 'id' | 'timestamp'>) => void;
+  markMessagesAsRead: (chatId: string, userId: string) => void;
   notifications: Notification[];
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp'>) => void;
   markNotificationAsRead: (id: string) => void;
+  clearAllNotifications: () => void;
   unreadCount: number;
 }
 
@@ -26,18 +32,31 @@ const INITIAL_ANIMALS: Animal[] = [
     breed: 'Labrador Retriever',
     age: 2,
     ageUnit: 'años',
+    gender: 'hembra',
+    size: 'grande',
+    color: 'Dorado',
     reason: 'encontrado',
     urgent: true,
     hasChip: false,
     isDewormed: true,
+    isSterilized: false,
     hasDisease: false,
     hasDisability: false,
+    goodWithKids: true,
+    goodWithDogs: true,
+    goodWithCats: false,
     photos: ['https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=500'],
     videos: [],
     mainPhoto: 'https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=500',
-    ownerId: '1',
+    ownerId: 'demo-1',
     ownerName: 'Administrador SAB',
-    createdAt: new Date().toISOString()
+    ownerPhone: '+34 666 777 888',
+    location: 'San Antonio de Benagéber',
+    description: 'Luna es una perrita muy cariñosa y juguetona. Le encanta pasear y jugar con niños. Busca una familia que le de mucho amor.',
+    status: 'disponible',
+    views: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   },
   {
     id: '2',
@@ -46,18 +65,31 @@ const INITIAL_ANIMALS: Animal[] = [
     breed: 'Común Europeo',
     age: 6,
     ageUnit: 'meses',
+    gender: 'macho',
+    size: 'pequeño',
+    color: 'Atigrado',
     reason: 'crias',
     urgent: false,
     hasChip: false,
     isDewormed: true,
+    isSterilized: false,
     hasDisease: false,
     hasDisability: false,
+    goodWithKids: true,
+    goodWithDogs: false,
+    goodWithCats: true,
     photos: ['https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500'],
     videos: [],
     mainPhoto: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500',
-    ownerId: '1',
+    ownerId: 'demo-1',
     ownerName: 'Administrador SAB',
-    createdAt: new Date().toISOString()
+    ownerPhone: '+34 666 777 888',
+    location: 'San Antonio de Benagéber',
+    description: 'Gatito juguetón y muy cariñoso. Ideal para familias con niños.',
+    status: 'disponible',
+    views: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }
 ];
 
@@ -71,7 +103,7 @@ const INITIAL_DONATIONS: Donation[] = [
     location: 'Calle Mayor, 15',
     deliveryAvailable: false,
     pickupRequired: true,
-    ownerId: '1',
+    ownerId: 'demo-1',
     ownerName: 'Administrador SAB',
     createdAt: new Date().toISOString()
   }
@@ -114,11 +146,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('sab_notifications', JSON.stringify(notifications));
   }, [notifications]);
 
-  const addAnimal = (animal: Omit<Animal, 'id' | 'createdAt'>) => {
+  const addAnimal = (animal: Omit<Animal, 'id' | 'createdAt' | 'updatedAt' | 'views'>) => {
     const newAnimal: Animal = {
       ...animal,
       id: Date.now().toString(),
-      createdAt: new Date().toISOString()
+      views: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     setAnimals(prev => [newAnimal, ...prev]);
 
@@ -130,8 +164,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const updateAnimal = (id: string, data: Partial<Animal>) => {
+    setAnimals(prev => prev.map(a =>
+      a.id === id ? { ...a, ...data, updatedAt: new Date().toISOString() } : a
+    ));
+  };
+
   const deleteAnimal = (id: string) => {
     setAnimals(prev => prev.filter(a => a.id !== id));
+  };
+
+  const getAnimalsByOwner = (ownerId: string): Animal[] => {
+    return animals.filter(a => a.ownerId === ownerId);
+  };
+
+  const incrementViews = (id: string) => {
+    setAnimals(prev => prev.map(a =>
+      a.id === id ? { ...a, views: a.views + 1 } : a
+    ));
   };
 
   const addDonation = (donation: Omit<Donation, 'id' | 'createdAt'>) => {
@@ -162,6 +212,48 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setChats(prev => [newChat, ...prev]);
   };
 
+  const sendMessage = (chatId: string, message: Omit<Message, 'id' | 'timestamp'>) => {
+    const newMessage: Message = {
+      ...message,
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString()
+    };
+
+    setChats(prev => prev.map(chat => {
+      if (chat.id === chatId) {
+        return {
+          ...chat,
+          messages: [...chat.messages, newMessage],
+          lastMessage: newMessage
+        };
+      }
+      return chat;
+    }));
+
+    // Crear notificación para el receptor
+    addNotification({
+      type: 'message',
+      title: 'Nuevo mensaje',
+      message: `${message.senderName}: ${message.text.substring(0, 50)}...`,
+      read: false,
+      link: `/chat/${chatId}`
+    });
+  };
+
+  const markMessagesAsRead = (chatId: string, userId: string) => {
+    setChats(prev => prev.map(chat => {
+      if (chat.id === chatId) {
+        return {
+          ...chat,
+          messages: chat.messages.map(msg =>
+            msg.senderId !== userId ? { ...msg, read: true } : msg
+          )
+        };
+      }
+      return chat;
+    }));
+  };
+
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp'>) => {
     const newNotification: Notification = {
       ...notification,
@@ -177,6 +269,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -184,15 +280,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         animals,
         addAnimal,
+        updateAnimal,
         deleteAnimal,
+        getAnimalsByOwner,
+        incrementViews,
         donations,
         addDonation,
         deleteDonation,
         chats,
         addChat,
+        sendMessage,
+        markMessagesAsRead,
         notifications,
         addNotification,
         markNotificationAsRead,
+        clearAllNotifications,
         unreadCount
       }}
     >

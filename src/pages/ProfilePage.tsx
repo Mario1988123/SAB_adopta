@@ -11,17 +11,28 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Button
+  Button,
+  Chip
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
+import { useData } from '../contexts/DataContext';
 import EmailIcon from '@mui/icons-material/Email';
 import BadgeIcon from '@mui/icons-material/Badge';
 import PhoneIcon from '@mui/icons-material/Phone';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import EditIcon from '@mui/icons-material/Edit';
+import PetsIcon from '@mui/icons-material/Pets';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import LogoutIcon from '@mui/icons-material/Logout';
+import VerifiedIcon from '@mui/icons-material/Verified';
 
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
+  const { getAnimalsByOwner } = useData();
   const navigate = useNavigate();
+
+  const myAnimalsCount = user ? getAnimalsByOwner(user.id).length : 0;
+  const favoritesCount = user?.favorites.length || 0;
 
   const handleLogout = () => {
     logout();
@@ -38,7 +49,7 @@ export const ProfilePage: React.FC = () => {
         Mi Perfil
       </Typography>
 
-      <Paper sx={{ p: 3, mb: 3 }}>
+      <Paper sx={{ p: 3, mb: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
           <Avatar
             src={user.photo}
@@ -46,12 +57,19 @@ export const ProfilePage: React.FC = () => {
           >
             {user.name.charAt(0)}
           </Avatar>
-          <Typography variant="h5" gutterBottom>
-            {user.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Cuenta Demo
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h5">
+              {user.name}
+            </Typography>
+            {user.verified && (
+              <VerifiedIcon color="primary" fontSize="small" />
+            )}
+          </Box>
+          {user.bio && (
+            <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mt: 1 }}>
+              {user.bio}
+            </Typography>
+          )}
         </Box>
 
         <Divider sx={{ my: 2 }} />
@@ -86,6 +104,53 @@ export const ProfilePage: React.FC = () => {
               />
             </ListItem>
           )}
+          {(user.city || user.province) && (
+            <ListItem>
+              <ListItemIcon>
+                <LocationOnIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Ubicación"
+                secondary={`${user.city || ''}${user.city && user.province ? ', ' : ''}${user.province || ''}`}
+              />
+            </ListItem>
+          )}
+        </List>
+
+        <Button
+          fullWidth
+          variant="outlined"
+          startIcon={<EditIcon />}
+          sx={{ mt: 2 }}
+          onClick={() => navigate('/edit-profile')}
+        >
+          Editar Perfil
+        </Button>
+      </Paper>
+
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <List>
+          <ListItem
+            button
+            onClick={() => navigate('/my-animals')}
+          >
+            <ListItemIcon>
+              <PetsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Mis Publicaciones" />
+            <Chip label={myAnimalsCount} size="small" />
+          </ListItem>
+          <Divider />
+          <ListItem
+            button
+            onClick={() => navigate('/favorites')}
+          >
+            <ListItemIcon>
+              <FavoriteIcon />
+            </ListItemIcon>
+            <ListItemText primary="Mis Favoritos" />
+            <Chip label={favoritesCount} size="small" />
+          </ListItem>
         </List>
       </Paper>
 

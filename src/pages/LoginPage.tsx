@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -7,15 +7,21 @@ import {
   Button,
   Typography,
   Box,
-  Alert
+  Alert,
+  InputAdornment,
+  IconButton,
+  Divider
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import PetsIcon from '@mui/icons-material/Pets';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -23,10 +29,20 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    if (login(username, password)) {
+    const result = login(email, password);
+    if (result.success) {
       navigate('/');
     } else {
-      setError('Usuario o contraseña incorrectos');
+      setError(result.error || 'Error al iniciar sesión');
+    }
+  };
+
+  const handleDemoLogin = () => {
+    setEmail('admin@sanantoniodebenageber.es');
+    setPassword('1234');
+    const result = login('admin@sanantoniodebenageber.es', '1234');
+    if (result.success) {
+      navigate('/');
     }
   };
 
@@ -54,20 +70,35 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               margin="normal"
-              autoComplete="username"
+              autoComplete="email"
+              required
             />
             <TextField
               fullWidth
               label="Contraseña"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               margin="normal"
               autoComplete="current-password"
+              required
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
 
             {error && (
@@ -86,12 +117,31 @@ export const LoginPage: React.FC = () => {
               Iniciar Sesión
             </Button>
 
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography variant="body2">
+                ¿No tienes cuenta?{' '}
+                <Link to="/register" style={{ color: '#1976d2', textDecoration: 'none' }}>
+                  Regístrate aquí
+                </Link>
+              </Typography>
+            </Box>
+
+            <Divider sx={{ my: 3 }}>o</Divider>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleDemoLogin}
+            >
+              Entrar con cuenta demo
+            </Button>
+
             <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
               <Typography variant="caption" display="block" gutterBottom>
-                <strong>Credenciales de demostración:</strong>
+                <strong>Cuenta de demostración:</strong>
               </Typography>
               <Typography variant="caption" display="block">
-                Usuario: Admin
+                Email: admin@sanantoniodebenageber.es
               </Typography>
               <Typography variant="caption" display="block">
                 Contraseña: 1234

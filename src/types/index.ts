@@ -1,15 +1,27 @@
 export interface User {
   id: string;
   email: string;
+  password: string;
   name: string;
   dni: string;
   photo?: string;
   phone?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  bio?: string;
+  verified: boolean;
+  createdAt: string;
+  favorites: string[]; // IDs de animales favoritos
 }
 
 export type AdoptionReason = 'encontrado' | 'crias' | 'no_puedo_mantener' | 'otros';
 export type AnimalType = 'perro' | 'gato';
 export type AgeUnit = 'años' | 'meses';
+
+export type AnimalGender = 'macho' | 'hembra' | 'desconocido';
+export type AnimalSize = 'pequeño' | 'mediano' | 'grande';
+export type AnimalStatus = 'disponible' | 'reservado' | 'adoptado';
 
 export interface Animal {
   id: string;
@@ -18,21 +30,34 @@ export interface Animal {
   breed: string;
   age: number;
   ageUnit: AgeUnit;
+  gender: AnimalGender;
+  size: AnimalSize;
+  color?: string;
   reason: AdoptionReason;
   maxAdoptionDate?: string;
   urgent: boolean;
   hasChip: boolean;
   isDewormed: boolean;
+  isSterilized: boolean;
   hasDisease: boolean;
   diseaseDescription?: string;
   hasDisability: boolean;
   disabilityDescription?: string;
+  goodWithKids: boolean;
+  goodWithDogs: boolean;
+  goodWithCats: boolean;
   photos: string[];
   videos: string[];
   mainPhoto: string;
   ownerId: string;
   ownerName: string;
+  ownerPhone?: string;
+  location: string;
+  description?: string;
+  status: AnimalStatus;
+  views: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface Donation {
@@ -82,10 +107,24 @@ export interface Notification {
 export interface SearchFilters {
   type?: AnimalType;
   breed?: string;
+  gender?: AnimalGender;
+  size?: AnimalSize;
   minAge?: number;
   maxAge?: number;
   ageUnit?: AgeUnit;
   urgent?: boolean;
+  status?: AnimalStatus;
+  goodWithKids?: boolean;
+  goodWithDogs?: boolean;
+  goodWithCats?: boolean;
+  location?: string;
+}
+
+export interface AppSettings {
+  notifications: boolean;
+  emailNotifications: boolean;
+  darkMode: boolean;
+  language: 'es' | 'en' | 'ca';
 }
 
 // Razas más comunes
